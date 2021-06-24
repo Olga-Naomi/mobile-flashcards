@@ -1,19 +1,34 @@
 import React from 'react'
-import { Text, TouchableOpacity, StyleSheet } from 'react-native'
-import { purple, white } from '../utils/colors'
+import { Text, TouchableOpacity, StyleSheet, View } from 'react-native'
+import { white } from '../utils/colors'
 
-export default function TextButton({ children, onPress,style = {}, disabled }) {
+export default function TextButton({ children, onPress, style = {}, disabled }) {
     return (
-        <TouchableOpacity onPress={onPress} disabled={disabled}>
-            <Text style={[styles.submit, style]}>{children}</Text>
-        </TouchableOpacity>
+        <View style={styles.container}>
+            <TouchableOpacity onPress={onPress} disabled={disabled} style={styles.btn}>
+                <Text style={[styles.text, style]}>{children}</Text>
+            </TouchableOpacity>
+        </View>
+
     )
 }
 
 
 const styles = StyleSheet.create({
-    submit: {
-      textAlign: 'center',
-      color: white,
+    container:{
+        alignItems: 'center',
+        marginBottom: 20
+    },
+    text: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: white,
+    },
+    btn:{
+        width: 300,
+        height: 50,
+        justifyContent: `center`,
+        alignItems: `center`,
     }
-  }) 
+})

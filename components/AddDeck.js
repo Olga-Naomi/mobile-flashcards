@@ -31,7 +31,7 @@ class AddDeck extends React.Component {
                 .catch(error => console.error(`Something went wrong ${error}`))
 
             this.toDetails(title)
-        }else{
+        } else {
             alert(`Deck name can't be Empty`)
         }
 
@@ -87,7 +87,8 @@ const styles = StyleSheet.create({
         },
     },
     title: {
-        //flex: 2,
+        paddingTop: 10,
+        textAlign: 'center',
         color: black,
         fontSize: 44
     },
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
         marginRight: 40
     },
     input: {
-        borderWidth: 1,
+        borderBottomWidth: 1,
         borderColor: black,
         backgroundColor: white,
         paddingLeft: 10,

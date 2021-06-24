@@ -1,13 +1,17 @@
+/**
+ * Reference: https://github.com/james-priest/mobile-flashcards
+ */
+
+
 import React, { Component } from 'react'
-import { Dimensions, ScrollView, StyleSheet, Text, View, Platform, Animated, TouchableOpacity } from 'react-native'
+import { Dimensions, ScrollView, StyleSheet, Text, View, Platform } from 'react-native'
 import { navigationRef } from '../navigation/RootNavigation';
 import { Ionicons } from '@expo/vector-icons'
 import { connect } from 'react-redux'
-import ActionButton from './ActionButton'
 import SubmitButton from './SubmitButton'
 import { setLocalNotification, clearLocalNotification } from '../utils/notifications'
 import { gray, purple, orange, textGray, white, black } from '../utils/colors'
-import CardFlip from 'react-native-card-flip';
+import Card from './Card';
 
 const screen = {
     QUESTION: 'question',
@@ -18,21 +22,12 @@ const answer = {
     CORRECT: 'correct',
     INCORRECT: 'incorrect'
 }
+
 const SCREEN_WIDTH = Dimensions.get('window').width
 
 
 
 class QuizDetails extends Component {
-
-    // AnimatedValue = 0
-
-    // componentDidMount() {
-    //     this.AnimatedValue = new Animated.Value(0)
-
-    //     this.frontInterpolate = this.AnimatedValue.interpolate({
-    //         inputRange
-    //     })
-    // }
 
     state = {
         show: screen.QUESTION,
@@ -41,11 +36,13 @@ class QuizDetails extends Component {
         questionCount: this.props.deck.questions.length,
         answered: Array(this.props.deck.questions.length).fill(0)
     }
+
     handleScroll = () => {
         this.setState({
             show: screen.QUESTION
         })
     }
+
     handleAnswer = (response, page) => {
         if (response === answer.CORRECT) {
             this.setState(prevState => ({ correct: prevState.correct + 1 }))
@@ -70,7 +67,8 @@ class QuizDetails extends Component {
             }
         )
     }
-    handleReset = () => {
+
+    reset = () => {
         this.setState(prevState => ({
             show: screen.QUESTION,
             correct: 0,
@@ -80,7 +78,6 @@ class QuizDetails extends Component {
     }
     render() {
         const { questions } = this.props.deck
-        const { show } = this.state
 
         if (questions.length === 0) {
             return (
@@ -104,7 +101,9 @@ class QuizDetails extends Component {
         }
 
         if (this.state.show === screen.RESULT) {
+
             clearLocalNotification().then(setLocalNotification)
+
             const { correct, questionCount } = this.state
             const percent = ((correct / questionCount) * 100).toFixed(0)
             const resultStyle =
@@ -129,7 +128,7 @@ class QuizDetails extends Component {
                     <View>
                         <SubmitButton
                             btnStyle={{ backgroundColor: white, borderColor: black }}
-                            onPress={this.handleReset}
+                            onPress={this.reset}
                         >
                             Restart Quiz
                         </SubmitButton>
@@ -137,7 +136,7 @@ class QuizDetails extends Component {
                             btnStyle={{ backgroundColor: gray, borderColor: textGray }}
                             txtStyle={{ color: textGray }}
                             onPress={() => {
-                                this.handleReset()
+                                this.reset()
                                 navigationRef.current.goBack()
                             }}
                         >
@@ -147,7 +146,7 @@ class QuizDetails extends Component {
                             btnStyle={{ backgroundColor: gray, borderColor: textGray }}
                             txtStyle={{ color: textGray }}
                             onPress={() => {
-                                this.handleReset()
+                                this.reset()
                                 navigationRef.current.navigate('Home')
                             }}
                         >
@@ -168,11 +167,6 @@ class QuizDetails extends Component {
                     this.scrollView = scrollView
                 }}
             >
-                {/* <CardFlip style={[styles.block, styles.questionContainer]} ref={(card) => this.card = card} >
-                    <TouchableOpacity style={styles.questionContainer} onPress={() => this.card.flip()} ><Text>AB</Text></TouchableOpacity>
-                    <TouchableOpacity style={styles.questionContainer} onPress={() => this.card.flip()} ><Text>CD</Text></TouchableOpacity>
-                </CardFlip> */}
-
                 {questions.map((question, idx) => (
                     <View style={styles.pageStyle} key={idx}>
                         <View style={styles.block}>
@@ -180,56 +174,7 @@ class QuizDetails extends Component {
                                 {idx + 1} / {questions.length}
                             </Text>
                         </View>
-                        <View style={[styles.block, styles.questionContainer]}>
-                            <Text style={styles.questionText}>
-                                {show === screen.QUESTION ? 'Question' : 'Answer'}
-                            </Text>
-                            <View style={styles.questionWrapper}>
-                                <Text style={styles.title}>
-                                    {show === screen.QUESTION
-                                        ? question.question
-                                        : question.answer}
-                                </Text>
-                            </View>
-                        </View>
-                        {/* <View style={[styles.block, styles.questionContainer, styles.container]}>
-                            <Text style={styles.questionText}>
-                                {show === screen.QUESTION ? 'Question' : 'Answer'}
-                            </Text>
-                            <CardFlip style={styles.cardContainer} ref={card => (this.card = card)}>
-                                <TouchableOpacity
-                                    activeOpacity={1}
-                                    style={[styles.card, styles.card1, styles.questionWrapper]}
-                                    onPress={() => { this.card.flip(); this.setState({ show: screen.ANSWER }); }}>
-                                    <Text style={styles.title}>
-                                        {question.question}
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    activeOpacity={1}
-                                    style={[styles.card, styles.card2, styles.questionWrapper]}
-                                    onPress={() => { this.card.flip(); this.setState({ show: screen.QUESTION }); }}>
-                                    <Text style={styles.title}>
-                                        {question.answer}
-                                    </Text>
-                                </TouchableOpacity>
-                            </CardFlip>
-                        </View> */}
-                        {show === screen.QUESTION ? (
-                            <ActionButton
-                                txtStyle={{ color: orange }}
-                                onPress={() => {this.setState({ show: screen.ANSWER }); }}
-                            >
-                                Tap Card to Show Answer
-                            </ActionButton>
-                        ) : (
-                            <ActionButton
-                                txtStyle={{ color: orange }}
-                                onPress={() => { this.setState({ show: screen.QUESTION }); }}
-                            >
-                                To card to Show Question
-                            </ActionButton>
-                        )}
+                        <Card question={question} screen={screen} />
                         <View>
                             <SubmitButton
                                 btnStyle={{ backgroundColor: white, borderColor: black }}
@@ -254,44 +199,6 @@ class QuizDetails extends Component {
     }
 }
 const styles = StyleSheet.create({
-    /*`container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-    },
-    cardContainer: {
-        width: 320,
-        height: 470,
-    },
-    card: {
-        width: 320,
-        height: 470,
-        backgroundColor: '#FE474C',
-        borderRadius: 5,
-        shadowColor: 'rgba(0,0,0,0.5)',
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.5,
-    },
-    card1: {
-        backgroundColor: '#FE474C',
-    },
-    card2: {
-        backgroundColor: '#FEB12C',
-    },
-    label: {
-        lineHeight: 470,
-        textAlign: 'center',
-        fontSize: 55,
-        fontFamily: 'System',
-        color: '#ffffff',
-        backgroundColor: 'transparent',
-    },
-*/
-
     container: {
         flex: 1
     },
@@ -310,38 +217,6 @@ const styles = StyleSheet.create({
         fontSize: 32,
         textAlign: 'center'
     },
-    questionContainer: {
-        backgroundColor: white,
-        //borderRadius: Platform.OS === 'ios' ? 16 : 2,
-        padding: 20,
-        marginLeft: 10,
-        marginRight: 10,
-        marginTop: 17,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowRadius: 3,
-        shadowOpacity: 0.8,
-        shadowColor: 'rgba(0, 0, 0, 0.24)',
-        shadowOffset: {
-            width: 0,
-            height: 3
-        },
-        backgroundColor: white,
-        paddingTop: 20,
-        paddingBottom: 20,
-        paddingLeft: 16,
-        paddingRight: 16,
-        flexGrow: 1
-    },
-    questionWrapper: {
-        flex: 1,
-        justifyContent: 'center'
-    },
-    questionText: {
-        textDecorationLine: 'underline',
-        textAlign: 'center',
-        fontSize: 20
-    },
     resultTextGood: {
         color: purple,
         fontSize: 30,
@@ -354,7 +229,7 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = (state, { title, navigation }) => {
+const mapStateToProps = (state, { title }) => {
     const deck = state[title]
     return {
         deck

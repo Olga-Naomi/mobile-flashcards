@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Text, View, TextInput, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
 import { addCard } from '../actions/index'
-import { gray, white, lightPurp, textGray, black } from '../utils/colors'
+import { white, black } from '../utils/colors'
 import { addCardToDeckAsync } from '../utils/helpers'
 import SubmitButton from './SubmitButton'
 
@@ -22,7 +22,9 @@ export class AddCard extends Component {
 
   handleSubmit = () => {
     const { addCard, title, navigation } = this.props
- 
+
+    console.log(this.props)
+
     const card = {
       question: this.state.question,
       answer: this.state.answer
@@ -39,7 +41,7 @@ export class AddCard extends Component {
       <View style={styles.container}>
         <View>
           <View style={styles.block}>
-            <Text style={styles.title}>Add a New Question</Text>
+            <Text style={styles.title}>Add a New Card</Text>
           </View>
           <View style={[styles.block]}>
             <TextInput
@@ -82,9 +84,21 @@ export class AddCard extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: white,
-    justifyContent: 'space-around'
+    //borderRadius: Platform.OS === 'ios' ? 16 : 2,
+    padding: 20,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 17,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowRadius: 3,
+    shadowOpacity: 0.8,
+    shadowColor: 'rgba(0, 0, 0, 0.24)',
+    shadowOffset: {
+      width: 0,
+      height: 3
+    },
   },
   block: {
     marginBottom: 20,
@@ -93,14 +107,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '900',
     textAlign: 'center',
     marginTop: 20,
     color: black,
     marginBottom: 16,
   },
   input: {
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderColor: black,
     backgroundColor: white,
     padding: 10,
@@ -112,8 +125,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state, { route }) => {
-    const { title } = route.params
-    return {
+  const { title } = route.params
+  return {
     title
   }
 }
